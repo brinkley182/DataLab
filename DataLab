@@ -1,0 +1,152 @@
+ /*
+ * bitOr - x|y using only ~ and &
+ *   Example: bitOr(6, 5) = 7
+ *   Legal ops: ~ &
+ *   Max ops: 8
+ *   Rating: 10
+ */
+int bitOr(int x, int y) {
+       //Demorgan's Law
+      return ~(~x&~y);
+}
+/*
+ * evenBits - return word with all even-numbered bits set to 1
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 8
+ *   Rating: 10
+ */
+int evenBits(void) {
+
+  //Shift by a byte each time which when merged gives us 0x55555555
+  int a,b;
+  a = 0x55;
+  b = (a+(a<<8)+(a<<16)+(a<<24));
+ return b;
+}
+/*
+ * getHexDigit - Extract hex digit n from int x
+ *   Digits numbered from 0 (least significant) to 7 (most significant)
+ *   Examples: getHexDigit(0x12345678,2) = 0x6
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 5
+ *   Rating: 6
+ */
+int getHexDigit(int x, int n) {
+  //Multiplies n by 4 to get it into 8 bits and uses 0x0F to unmask the digits except the expected
+ return (x>>(n<<2))&0x0F;
+}
+/*
+ * allEvenBits - return 1 if all even-numbered bits in int are set to 1
+ *   Examples allEvenBits(0xFFFFFFFE) = 0, allEvenBits(0x55555555) = 1
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 12
+ *   Rating: 6
+ */
+int allEvenBits(int x) {
+  /*even is a representation of a all even positions are = 1
+   *Shift it an additional 2 bytes to make it 32 bits long
+   *x*even checks where each bit is lined up in the even position
+   *Xor is used for if they are both 0 to flip it to 1
+   */
+  int even = (0X55 << 8)+ 0X55;
+ even = (even << 16)+ even;
+ return !((x&even)^even);
+}
+/*
+ * rotateLeft - Rotate x to the left by n
+ *   Can assume that 0 <= n <= 31
+ *   Examples: rotateLeft(0x87654321,4) = 0x76543218
+ *   Legal ops: ~ & ^ | + << >> !
+ *   Max ops: 25
+ *   Rating: 6
+ */
+int rotateLeft(int x, int n) {
+  /*high and low are used to save the high and low ordered bits
+   *shift holds the distance of the shift
+   *high then is used to save all the high ordered wrapped bits
+   *low is used to pop possible wrapped 1's
+   *temp is used to save the n high ordered bits, move them, then pop out leading 1's
+   *Shifts x to the left n positions and adds the wrapped bits on the right of the solution
+   */
+  int high, low;
+  int temp;
+  int shift;
+  shift= 33 + ~n;
+  high=~0<< shift;
+  low= ~(~0<<n);
+  temp=((x&high)>>shift)& low;
+ return (x<<n) | temp;
+}
+/*
+ * conditional - same as x ? y : z
+ *   Example: conditional(2,4,5) = 4
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 16
+ *   Rating: 4
+ */
+int conditional(int x, int y, int z) {
+  /*if x != 0 subtract 1 from 0 else if x=0 subtract 1 from 1
+   *if x = 0 z gets popped and y is concealed vice versa for the latter expression
+   */
+ int a = (!x +~0x00);
+ return ((~a)&z)|(a&y);
+}
+/*
+ * bitParity - returns 1 if x contains an odd number of 1's
+ *   Examples: bitParity(5) = 0, bitParity(7) = 1
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 20
+ *   Rating: 2
+ */
+int bitParity(int x) {
+  //Using the xor operator which returns the number of 1's present in x and splits x into two parts
+  //Then by shifting it keeps the parity consistent for the answer while approaching the final bit in x
+  //If the last function returns 0 then x had an even parity if it returns 1 then it had an odd parity
+  x ^= x >> 16;
+  x ^= x >> 8;
+  x ^= x >> 4;
+  x ^= x >> 2;
+  x ^= x >> 1;
+
+ return x & 0x01;
+}
+int minusThree(void) {
+  //Flips bits in 2 to make it negative
+ return ~0x02;
+}
+/*
+ * TMax - return maximum two's complement integer
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 6
+ *   Rating: 10
+ */
+int tmax(void) {
+  //Shifts 1 to the most significant bit and then flips it
+  return ~(1<<31);
+}
+/*
+ * subtract - compute x - y
+ *   Can assume that 0 <= n <= 31
+ *   Examples: subtract(4, 9) = -5
+ *   Legal ops: ~ & ^ | + << >> !
+ *   Max ops: 5
+ *   Rating: 8
+ */
+int subtract(int x, int y) {
+  // Adds x to the two's compliment negative of y
+  return x+(~y+1);
+}
+/*
+ * times66 - multiplies by 66
+ *   Should exactly duplicate effect of C expression (x*66),
+ *   including overflow behavior.
+ *   Examples: times66(1) = 66
+ *             times66(-1) = -66
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 6
+ *   Rating: 6
+ */
+int times66(int x) {
+  //Shifts to the 2^6 bit then adds the 2 to account for the extra 2 you are multiplying by
+  return ((x<<6)+0x02);
+}
